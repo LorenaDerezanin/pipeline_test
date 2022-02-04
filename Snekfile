@@ -1,0 +1,77 @@
+### VARIANT CALLING PIPELINE ###
+
+# author: Lorena Derezanin
+# date:  2/4/2022
+
+# snakemake v
+# run in conda env
+
+###########################################################################################################################################################
+
+
+rule all:
+    input:
+
+
+
+
+
+###########################################################################################################################################################
+
+## PREPARE SEQUENCES ##
+
+rule trim_reads:
+
+trim_galore
+
+
+
+
+rule reads_QC:
+
+fastQC/MultiQC
+
+
+
+
+rule map_reads:
+
+bwa mem
+
+
+rule sam_to_bam:
+
+samtools view
+
+
+
+rule sort_bam:
+
+samtools sort
+
+
+
+rule rm_dups:
+
+picard MarkDuplicates
+
+
+###########################################################################################################################################################
+
+## VARIANT CALLING ##
+
+
+rule var_call:
+
+FreeBayes
+
+
+rule QC_filter:
+
+
+
+
+
+
+
+
