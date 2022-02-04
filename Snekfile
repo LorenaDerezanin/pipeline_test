@@ -9,6 +9,9 @@
 
 # add unit tests before rule chunks
 # add config with default params - 2 CPUs, required input params: -1 reads1.fq/fa -2 reads2.fa/fq -ref 
+# test pipeline on mice reads mapped to MT - extract from dedup bam
+
+
 
 ###########################################################################################################################################################
 
