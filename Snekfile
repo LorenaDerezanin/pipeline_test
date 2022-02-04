@@ -6,6 +6,10 @@
 # snakemake v
 # run in conda env
 
+
+# add unit tests before rule chunks
+# add config with default params - 2 CPUs, required input params: -1 reads1.fq/fa -2 reads2.fa/fq -ref 
+
 ###########################################################################################################################################################
 
 
