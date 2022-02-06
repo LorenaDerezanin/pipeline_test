@@ -1,0 +1,3 @@
+samples:
+  sample.R1.paired: sample.R1.paired.fq.gz
+  sample.R2.paired: sample.R2.paired.fq.gz

@@ -1,4 +1,3 @@
-# Pipeline_test
 
 Variant calling pipeline and statistical summary of metrics
 
