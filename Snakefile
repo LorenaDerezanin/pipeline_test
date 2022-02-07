@@ -5,7 +5,7 @@
 
 # snakemake v.6.15.2.
 # conda v.4.11.0
-# mamba v.0.15.3 - more robust pkg manager than conda, handles snakemake releases better
+# mamba v.0.15.3 - more robust pkg manager than conda, handles snakemake releases and dependencies better
 # run in conda env snek2
 # snakemake --use-conda
 
@@ -29,10 +29,13 @@ rule all:
         # expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
         # expand("results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz", sample=SAMPLES, ext=EXT),
         # expand("results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt", sample=SAMPLES, ext=EXT),
-        expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
-        expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
-        expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
-        expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES)
+        # expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
+        expand("reference/{ref}.fasta.fai", ref=REF),
+        # expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
+        # expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
+        # expand("results/dedup/{sample}_dedup.bam.bai", sample=SAMPLES),
+        # expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
+        expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
 
       
 
@@ -64,7 +67,7 @@ rule trim_PE_reads:
         expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT)
     output:
         "results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz",
-        "results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt",
+        "results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt"
     params:
         extra="--gzip -q 20"
     log:
@@ -81,7 +84,7 @@ rule trim_PE_reads:
 
 
 # index reference genome
-rule ref_index:
+rule bwa_index:
     input:
         "reference/{ref}.fasta"
     output:
@@ -94,21 +97,30 @@ rule ref_index:
         "v1.0.0/bio/bwa/index"
 
 
-# map PE reads to ref. genome
+rule samtools_index:
+    input:
+        "reference/{ref}.fasta"
+    output:
+        "reference/{ref}.fasta.fai"
+    log:
+        "logs/samtools_faidx/{ref}.log"
+    wrapper:
+        "v1.1.0/bio/samtools/faidx"
+
+
+# map PE reads to ref. genome and sort
 rule map_reads:
     input:
         reads=expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT),
-        # idx="reference/{ref}"
-        idx=expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
+        idx=expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"])
     output:
-        "results/mapped/{sample}_srt.bam",
+        "results/mapped/{sample}_srt.bam"
     log:
-        "logs/bwa_mem/{sample}_srt.log",
+        "logs/bwa_mem/{sample}_srt.log"
     params:
         extra=r"-R '@RG\tID:{sample}\tSM:{sample}'",
         sorting="samtools",  # Can be 'none', 'samtools' or 'picard'
-        sort_order="coordinate", 
-        # sort_extra="",  
+        sort_order="coordinate"
     threads: 2
     wrapper:
         "v1.1.0/bio/bwa/mem"
@@ -116,22 +128,24 @@ rule map_reads:
 
 
 # remove duplicates
-rule rm_dups:
+rule dedup:
     input:
         "results/mapped/{sample}_srt.bam"
     output:
         bam="results/dedup/{sample}_dedup.bam",
-        metrics="results/dedup/{sample}.dedup.metrics.txt",
+        bai="results/dedup/{sample}_dedup.bam.bai",
+        metrics="results/dedup/{sample}.dedup.metrics.txt"
     log:
-        "logs/picard/dedup/{sample}.log",
+        "logs/picard/dedup/{sample}.log"
     params:
-        extra="--REMOVE_DUPLICATES true",
+        extra="--REMOVE_DUPLICATES true --CREATE_INDEX true"
     resources:
-        mem_mb=1024,
+        mem_mb=1024
     wrapper:
         "v1.1.0/bio/picard/markduplicates"
 
 
+# mosdepth - coverage check
 
 
 
@@ -140,12 +154,36 @@ rule rm_dups:
 ## VARIANT CALLING ##
 
 
-# rule var_call:
+# short variant calling 
+rule var_call:
+    input:
+        ref=expand("reference/{ref}.fasta", ref=REF),
+        samples="results/dedup/{sample}_dedup.bam",
+        indexes="results/dedup/{sample}_dedup.bam.bai"
+        #regions="path/to/region-file.bed"
+    output:
+        "results/var_calls/{sample}.vcf"
+    log:
+        "logs/freebayes/{sample}.log"
+    threads: 2
+    wrapper:
+        "v1.1.0/bio/freebayes"
 
-# FreeBayes
 
 
-# rule QC_filter:
+# quality filter
+rule qual_filter:
+    input:
+        "results/var_calls/{sample}.vcf"
+    output:
+        "results/var_calls/{sample}.QUAL_fltr.vcf"
+    log:
+        "log/bcftools/{sample}.QUAL_fltr.log"
+    params:
+        filter="-i 'QUAL >= 20'"
+    wrapper:
+        "v1.1.0/bio/bcftools/filter"
+
 
 
 
