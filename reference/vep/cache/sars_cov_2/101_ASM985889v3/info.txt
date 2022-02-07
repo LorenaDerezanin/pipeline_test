@@ -1,0 +1,4 @@
+species	sars_cov_2
+assembly	ASM985889v3
+source_genebuild	2020-04
+source_assembly	ASM985889v3
