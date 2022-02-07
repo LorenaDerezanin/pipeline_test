@@ -31,6 +31,8 @@ rule all:
         # expand("results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt", sample=SAMPLES, ext=EXT),
         expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
         expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
+        expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
+        expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES)
 
       
 
@@ -115,6 +117,19 @@ rule map_reads:
 
 # remove duplicates
 rule rm_dups:
+    input:
+        "results/mapped/{sample}_srt.bam"
+    output:
+        bam="results/dedup/{sample}_dedup.bam",
+        metrics="results/dedup/{sample}.dedup.metrics.txt",
+    log:
+        "logs/picard/dedup/{sample}.log",
+    params:
+        extra="--REMOVE_DUPLICATES true",
+    resources:
+        mem_mb=1024,
+    wrapper:
+        "v1.1.0/bio/picard/markduplicates"
 
 
 
