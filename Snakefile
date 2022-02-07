@@ -21,7 +21,7 @@
 SAMPLES=["sample"]
 EXT=["1", "2"]
 REF="MN908947.3"
-GFF="Sars_cov_2.ASM985889v3.101.gff3"
+
 
 rule all:
     input:
