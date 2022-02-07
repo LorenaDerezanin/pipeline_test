@@ -25,21 +25,21 @@ GFF="Sars_cov_2.ASM985889v3.101.gff3"
 
 rule all:
     input:
-        expand("results/stats/{sample}.R{ext}.html", sample=SAMPLES, ext=EXT),
-        expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
-        expand("results/stats/{sample}_multiqc.html", sample=SAMPLES),
-        # expand("results/trimmed_reads/{sample}.1_val_1.fq.gz", sample=SAMPLES),
-        # expand("results/trimmed_reads/{sample}.1.fastq.gz_trimming_report.txt", sample=SAMPLES),
-        # expand("results/trimmed_reads/{sample}.2_val_2.fq.gz", sample=SAMPLES),
-        # expand("results/trimmed_reads/{sample}.2.fastq.gz_trimming_report.txt", sample=SAMPLES),
+        # expand("results/stats/{sample}.R{ext}.html", sample=SAMPLES, ext=EXT),
+        # expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
+        # expand("results/stats/{sample}_multiqc.html", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.R1.paired_val_1.fq.gz", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.R1.paired.fq.gz_trimming_report.txt", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.R2.paired_val_2.fq.gz", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.R2.paired.fq.gz_trimming_report.txt", sample=SAMPLES),
         # expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
-        expand("reference/{ref}.fasta.fai", ref=REF),
+        # expand("reference/{ref}.fasta.fai", ref=REF),
         # expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
-        # expand("results/dedup/{sample}_dedup.bam.bai", sample=SAMPLES),
-        expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
+        # expand("results/dedup/{sample}_dedup.bai", sample=SAMPLES),
+        # expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
         # expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
-        expand("results/stats/{sample}.var.stats", sample=SAMPLES),
+        # expand("results/stats/{sample}.var.stats", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_QUAL_fltr.vcf", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_DP_fltr.vcf", sample=SAMPLES),
         # "reference/vep/cache",
@@ -86,15 +86,14 @@ rule trim_PE_reads:
     input:
         reads=["input/{sample}.R1.paired.fq.gz", "input/{sample}.R2.paired.fq.gz"]
     output:
-        "results/trimmed_reads/{sample}.1_val_1.fq.gz",
-        "results/trimmed_reads/{sample}.1.fastq.gz_trimming_report.txt",
-        "results/trimmed_reads/{sample}.2_val_2.fq.gz",
-        "results/trimmed_reads/{sample}.2.fastq.gz_trimming_report.txt"
+        "results/trimmed_reads/{sample}.R1.paired_val_1.fq.gz",
+        "results/trimmed_reads/{sample}.R1.paired.fq.gz_trimming_report.txt",
+        "results/trimmed_reads/{sample}.R2.paired_val_2.fq.gz",
+        "results/trimmed_reads/{sample}.R2.paired.fq.gz_trimming_report.txt"
     params:
         extra="--gzip -q 20"
     log:
-        "logs/trim_galore/{sample}.R1.log",
-        "logs/trim_galore/{sample}.R2.log"
+        "logs/trim_galore/{sample}.log"
     wrapper:
         "v1.0.0/bio/trim_galore/pe"
 
@@ -120,14 +119,13 @@ rule bwa_index:
         "v1.0.0/bio/bwa/index"
 
 
-
-rule samtools_index:
+rule samtools_faidx:
     input:
         "reference/{ref}.fasta"
     output:
         "reference/{ref}.fasta.fai"
     log:
-        "logs/samtools_faidx/{ref}.log"
+        "logs/samtools/{ref}_faidx.log"
     wrapper:
         "v1.1.0/bio/samtools/faidx"
 
@@ -136,7 +134,7 @@ rule samtools_index:
 # map PE reads to ref. genome and sort
 rule map_reads:
     input:
-        reads=["results/trimmed_reads/{sample}.1_val_1.fq.gz", "results/trimmed_reads/{sample}.2_val_2.fq.gz"],
+        reads=["results/trimmed_reads/{sample}.R1.paired_val_1.fq.gz", "results/trimmed_reads/{sample}.R2.paired_val_2.fq.gz"],
         idx=expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"])
     output:
         "results/mapped/{sample}_srt.bam"
@@ -158,7 +156,7 @@ rule dedup:
         "results/mapped/{sample}_srt.bam"
     output:
         bam="results/dedup/{sample}_dedup.bam",
-        bai="results/dedup/{sample}_dedup.bam.bai",
+        bai="results/dedup/{sample}_dedup.bai",
         metrics="results/dedup/{sample}.dedup.metrics.txt"
     log:
         "logs/picard/dedup/{sample}.log"
@@ -181,7 +179,7 @@ rule var_call:
     input:
         ref=expand("reference/{ref}.fasta", ref=REF),
         samples="results/dedup/{sample}_dedup.bam",
-        indexes="results/dedup/{sample}_dedup.bam.bai"
+        indexes="results/dedup/{sample}_dedup.bai"
     output:
         "results/var_calls/{sample}.vcf"
     log:
