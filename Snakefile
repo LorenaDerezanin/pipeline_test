@@ -30,12 +30,14 @@ rule all:
         # expand("results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz", sample=SAMPLES, ext=EXT),
         # expand("results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt", sample=SAMPLES, ext=EXT),
         # expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
-        expand("reference/{ref}.fasta.fai", ref=REF),
+        # expand("reference/{ref}.fasta.fai", ref=REF),
         # expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam.bai", sample=SAMPLES),
         # expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
-        expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
+        expand("results/stats/{sample}.stats", sample=SAMPLES),
+        # expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
+        # expand("results/var_filtered/{sample}_QUAL_fltr.vcf", sample=SAMPLES),
 
       
 
@@ -160,7 +162,6 @@ rule var_call:
         ref=expand("reference/{ref}.fasta", ref=REF),
         samples="results/dedup/{sample}_dedup.bam",
         indexes="results/dedup/{sample}_dedup.bam.bai"
-        #regions="path/to/region-file.bed"
     output:
         "results/var_calls/{sample}.vcf"
     log:
@@ -171,20 +172,46 @@ rule var_call:
 
 
 
+# check avg, min, max DP before filtering
+rule var_stats:
+    input:
+        "results/var_calls/{sample}.vcf"
+    output:
+        "results/stats/{sample}.stats"
+    log:
+        "logs/bcftools/{sample}.stats.log"
+    wrapper:
+        "v1.1.0/bio/bcftools/stats"
+
+
+
 # quality filter
 rule qual_filter:
     input:
         "results/var_calls/{sample}.vcf"
     output:
-        "results/var_calls/{sample}.QUAL_fltr.vcf"
+        "results/var_filtered/{sample}_QUAL_fltr.vcf"
     log:
-        "log/bcftools/{sample}.QUAL_fltr.log"
+        "log/bcftools/{sample}_QUAL_fltr.log"
     params:
         filter="-i 'QUAL >= 20'"
     wrapper:
         "v1.1.0/bio/bcftools/filter"
 
 
+
+# depth filter
+rule DP_filter:
+    input:
+        "results/var_calls/{sample}.vcf"
+    output:
+        "results/var_filtered/{sample}_DP_fltr.vcf"
+    log:
+        "log/bcftools/{sample}_DP_fltr.log"
+    params:
+        filter="-i 'FMT/DP >= 10'"
+    wrapper:
+        "v1.1.0/bio/bcftools/filter"
 
 
 
