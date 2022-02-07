@@ -1,22 +1,28 @@
 
-Variant calling pipeline and statistical summary of metrics
+# Variant calling pipeline 
 
-* trim_galore
-* FastQC or MultiQC
-* bwa mem
-* samtools sam > bam > sorted bam
-* Picard MarkDups - rmdups
-* variant calling - FreeBayes
-* QC filtering
+
+### Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+### Recreate conda environment:
+`conda env create -f envs/snek.yml`
+
+### Activate environment:
+`conda activate snek`
+
+### Install snakemake with mamba: 
+`mamba install snakemake`
+Robust package manager, handles snakemake releases and dependencies better than conda.
+
+### Run pipeline as:
+`snakemake --use-conda --cores 4 --verbose -S Snakefile`
+
 * plot summary - Rmd > knit to html
 ** het/hom SNPs/INDELs
-** SNP/INDEL per 1kb-window
 ** genome synteny - gggenomes (R pkg)
 ** chromomap - heatmap with variants
 
-Run in conda env, include yml file to recreate the env
 Run unit tests
-Run on 2 cores by default (to avoid using up all local CPUs)
 
 Test pipeline on mice reads mapped to MT - extract from dedup bam:
 * 1 mouse from control line (high cov set)

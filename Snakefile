@@ -2,11 +2,10 @@
 
 # author: Lorena Derezanin
 
-# snakemake v.6.15.2.
+# snakemake v.6.15.2
 # conda v.4.11.0
-# mamba v.0.15.3 - more robust pkg manager than conda, handles snakemake releases and dependencies better
-# run in conda env snek2
-# snakemake --use-conda
+# mamba v.0.20 
+# snakemake --use-conda --cores 4 --verbose -S Snakefile
 
 
 # add unit tests 
