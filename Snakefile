@@ -19,26 +19,33 @@
 
 # configfile: "config.yaml"
 SAMPLES=["sample"]
-EXT=[1, 2]
+EXT=["1", "2"]
 REF="MN908947.3"
+GFF="Sars_cov_2.ASM985889v3.101.gff3"
 
 rule all:
     input:
-        # expand("results/stats/{sample}.R{ext}.html", sample=SAMPLES, ext=EXT),
-        # expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
-        # expand("results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz", sample=SAMPLES, ext=EXT),
-        # expand("results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt", sample=SAMPLES, ext=EXT),
+        expand("results/stats/{sample}.R{ext}.html", sample=SAMPLES, ext=EXT),
+        expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
+        expand("results/stats/{sample}_multiqc.html", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.1_val_1.fq.gz", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.1.fastq.gz_trimming_report.txt", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.2_val_2.fq.gz", sample=SAMPLES),
+        # expand("results/trimmed_reads/{sample}.2.fastq.gz_trimming_report.txt", sample=SAMPLES),
         # expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
-        # expand("reference/{ref}.fasta.fai", ref=REF),
+        expand("reference/{ref}.fasta.fai", ref=REF),
         # expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam.bai", sample=SAMPLES),
-        # expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
-        # expand("results/stats/{sample}.var.stats", sample=SAMPLES),
+        expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
         # expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
+        expand("results/stats/{sample}.var.stats", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_QUAL_fltr.vcf", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_DP_fltr.vcf", sample=SAMPLES),
-        "reference/vep/cache",
+        # "reference/vep/cache",
+        "reference/vep/plugins",
+        expand("results/var_vep_annotated/{sample}.vep.vcf", sample=SAMPLES),
+        expand("results/var_vep_annotated/{sample}.vep.html", sample=SAMPLES)
 
 
 
@@ -48,10 +55,9 @@ rule all:
 
 
 # quality check reads
-rule reads_QC:
+rule fastqc:
     input:
-        # ["input/{sample}.R1.paired.fq.gz", "input/{sample}.R2.paired.fq.gz"]
-        expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT)
+        "input/{sample}.R{ext}.paired.fq.gz"
     output:
         html="results/stats/{sample}.R{ext}.html",
         zip="results/stats/{sample}.R{ext}_fastqc.zip" 
@@ -62,19 +68,35 @@ rule reads_QC:
 
 
 
+# aggregate fastqc reports
+rule multiqc:
+    input:
+        lambda wildcards: expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=wildcards.sample, ext=EXT)
+    output:
+        "results/stats/{sample}_multiqc.html"
+    log:
+        "logs/multiqc/{sample}_multiqc.log"
+    wrapper:
+        "v1.1.0/bio/multiqc"
+
+
+
 # QC and adapter trimmming 
-# rule trim_PE_reads:
-#     input:
-#         expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT)
-#     output:
-#         "results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz",
-#         "results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt"
-#     params:
-#         extra="--gzip -q 20"
-#     log:
-#         "logs/trim_galore/{sample}.R{ext}.log"
-#     wrapper:
-#         "v1.0.0/bio/trim_galore/pe"
+rule trim_PE_reads:
+    input:
+        reads=["input/{sample}.R1.paired.fq.gz", "input/{sample}.R2.paired.fq.gz"]
+    output:
+        "results/trimmed_reads/{sample}.1_val_1.fq.gz",
+        "results/trimmed_reads/{sample}.1.fastq.gz_trimming_report.txt",
+        "results/trimmed_reads/{sample}.2_val_2.fq.gz",
+        "results/trimmed_reads/{sample}.2.fastq.gz_trimming_report.txt"
+    params:
+        extra="--gzip -q 20"
+    log:
+        "logs/trim_galore/{sample}.R1.log",
+        "logs/trim_galore/{sample}.R2.log"
+    wrapper:
+        "v1.0.0/bio/trim_galore/pe"
 
 
 
@@ -98,6 +120,7 @@ rule bwa_index:
         "v1.0.0/bio/bwa/index"
 
 
+
 rule samtools_index:
     input:
         "reference/{ref}.fasta"
@@ -109,10 +132,11 @@ rule samtools_index:
         "v1.1.0/bio/samtools/faidx"
 
 
+
 # map PE reads to ref. genome and sort
 rule map_reads:
     input:
-        reads=expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT),
+        reads=["results/trimmed_reads/{sample}.1_val_1.fq.gz", "results/trimmed_reads/{sample}.2_val_2.fq.gz"],
         idx=expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"])
     output:
         "results/mapped/{sample}_srt.bam"
@@ -146,9 +170,6 @@ rule dedup:
         "v1.1.0/bio/picard/markduplicates"
 
 
-# mosdepth - coverage check
-
-
 
 ###########################################################################################################################################################
 
@@ -171,7 +192,7 @@ rule var_call:
 
 
 
-# check avg, min, max DP before filtering
+# check min, max DP before filtering
 rule var_stats:
     input:
         "results/var_calls/{sample}.vcf"
@@ -191,7 +212,7 @@ rule QUAL_filter:
     output:
         "results/var_filtered/{sample}_QUAL_fltr.vcf"
     log:
-        "log/bcftools/{sample}_QUAL_fltr.log"
+        "logs/bcftools/{sample}_QUAL_fltr.log"
     params:
         filter="-i 'QUAL >= 20'"
     wrapper:
@@ -202,11 +223,11 @@ rule QUAL_filter:
 # depth filter
 rule DP_filter:
     input:
-        "results/var_calls/{sample}.vcf"
+        "results/var_filtered/{sample}_QUAL_fltr.vcf"
     output:
         "results/var_filtered/{sample}_DP_fltr.vcf"
     log:
-        "log/bcftools/{sample}_DP_fltr.log"
+        "logs/bcftools/{sample}_DP_fltr.log"
     params:
         filter="-i 'FMT/DP >= 10'"
     wrapper:
@@ -220,38 +241,44 @@ rule DP_filter:
 
 
 # get annotation files
-rule vep_cache:
+# rule vep_cache:
+#     output:
+#         directory("reference/vep/cache")
+#     params:
+#         species="sars_cov_2",
+#         build="ASM985889v3",
+#         release="101"
+#     log:
+#         "logs/vep/cache.log"
+#     cache: True  
+#     wrapper:
+#         "0.70.0/bio/vep/cache"
+
+
+# get vep plugins
+rule vep_plugins:
     output:
-        directory("reference/vep/cache")
+        directory("reference/vep/plugins")
     params:
-        species="sars_cov_2",
-        build="ASM985889v3",
-        release="105"
-    log:
-        "logs/vep/cache.log"
-    cache: True  
+        release=101
     wrapper:
-        "v1.1.0/bio/vep/cache"
+        "v1.1.0/bio/vep/plugins"
 
 
 # annotate variants
 rule vep_annotate_vars:
     input:
-        calls="results/var_filtered/{sample}_DP_fltr.vcf",  # .vcf, .vcf.gz or .bcf
-        # cache="resources/vep/cache",  # can be omitted if fasta and gff are specified
-        # plugins="resources/vep/plugins",
-        fasta=expand("reference/{ref}.fasta", ref=REF),
-        fai=expand("reference/{ref}.fasta.fai", ref=REF),
-        # gff="annotation.gff",
-        # csi="annotation.gff.csi", # tabix index
+        calls="results/var_filtered/{sample}_DP_fltr.vcf", 
+        cache="reference/vep/cache",  
+        plugins="reference/vep/plugins"
     output:
-        calls="results/variants.vep.vcf", 
-        stats="variants.html",
+        calls="results/var_vep_annotated/{sample}.vep.vcf", 
+        stats="results/var_vep_annotated/{sample}.vep.html"
     params:
-        # plugins=["LoFtool"],
-        extra="--everything",  # optional: extra arguments
+        plugins=["GO"],  # can't omit plugin, mandatory in wrapper script
+        # extra="--everything"  
     log:
-        "logs/vep/{sample}.vep.log",
+        "logs/vep/{sample}.var.vep.log"
     threads: 4
     wrapper:
-        "v1.1.0/bio/vep/annotate"
+        "0.71.1/bio/vep/annotate"
