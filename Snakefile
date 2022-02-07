@@ -1,7 +1,6 @@
 ### VARIANT CALLING PIPELINE ###
 
 # author: Lorena Derezanin
-# date:  2/4/2022
 
 # snakemake v.6.15.2.
 # conda v.4.11.0
@@ -35,17 +34,17 @@ rule all:
         # expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam.bai", sample=SAMPLES),
         # expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
-        expand("results/stats/{sample}.stats", sample=SAMPLES),
+        # expand("results/stats/{sample}.var.stats", sample=SAMPLES),
         # expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_QUAL_fltr.vcf", sample=SAMPLES),
-
-      
+        # expand("results/var_filtered/{sample}_DP_fltr.vcf", sample=SAMPLES),
+        "reference/vep/cache",
 
 
 
 ###########################################################################################################################################################
 
-## PREPARE INPUT SEQUENCES ##
+## INPUT PREPARATION ##
 
 
 # quality check reads
@@ -64,25 +63,25 @@ rule reads_QC:
 
 
 # QC and adapter trimmming 
-rule trim_PE_reads:
-    input:
-        expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT)
-    output:
-        "results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz",
-        "results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt"
-    params:
-        extra="--gzip -q 20"
-    log:
-        "logs/trim_galore/{sample}.R{ext}.log"
-    wrapper:
-        "v1.0.0/bio/trim_galore/pe"
+# rule trim_PE_reads:
+#     input:
+#         expand("input/{sample}.R{ext}.paired.fq.gz", sample=SAMPLES, ext=EXT)
+#     output:
+#         "results/trimmed_reads/{sample}.{ext}_val_{ext}.fq.gz",
+#         "results/trimmed_reads/{sample}.{ext}.fastq.gz_trimming_report.txt"
+#     params:
+#         extra="--gzip -q 20"
+#     log:
+#         "logs/trim_galore/{sample}.R{ext}.log"
+#     wrapper:
+#         "v1.0.0/bio/trim_galore/pe"
 
 
 
 
 ###########################################################################################################################################################
 
-## MAP READS ##
+## READ MAPPING ##
 
 
 # index reference genome
@@ -153,7 +152,7 @@ rule dedup:
 
 ###########################################################################################################################################################
 
-## VARIANT CALLING ##
+## VARIANT CALLING and FILTERING ##
 
 
 # short variant calling 
@@ -177,16 +176,16 @@ rule var_stats:
     input:
         "results/var_calls/{sample}.vcf"
     output:
-        "results/stats/{sample}.stats"
+        "results/stats/{sample}.var.stats"
     log:
-        "logs/bcftools/{sample}.stats.log"
+        "logs/bcftools/{sample}.var.stats.log"
     wrapper:
         "v1.1.0/bio/bcftools/stats"
 
 
 
 # quality filter
-rule qual_filter:
+rule QUAL_filter:
     input:
         "results/var_calls/{sample}.vcf"
     output:
@@ -215,7 +214,44 @@ rule DP_filter:
 
 
 
+###########################################################################################################################################################
+
+## VARIANT ANNOTATION ##
 
 
+# get annotation files
+rule vep_cache:
+    output:
+        directory("reference/vep/cache")
+    params:
+        species="sars_cov_2",
+        build="ASM985889v3",
+        release="105"
+    log:
+        "logs/vep/cache.log"
+    cache: True  
+    wrapper:
+        "v1.1.0/bio/vep/cache"
 
 
+# annotate variants
+rule vep_annotate_vars:
+    input:
+        calls="results/var_filtered/{sample}_DP_fltr.vcf",  # .vcf, .vcf.gz or .bcf
+        # cache="resources/vep/cache",  # can be omitted if fasta and gff are specified
+        # plugins="resources/vep/plugins",
+        fasta=expand("reference/{ref}.fasta", ref=REF),
+        fai=expand("reference/{ref}.fasta.fai", ref=REF),
+        # gff="annotation.gff",
+        # csi="annotation.gff.csi", # tabix index
+    output:
+        calls="results/variants.vep.vcf", 
+        stats="variants.html",
+    params:
+        # plugins=["LoFtool"],
+        extra="--everything",  # optional: extra arguments
+    log:
+        "logs/vep/{sample}.vep.log",
+    threads: 4
+    wrapper:
+        "v1.1.0/bio/vep/annotate"
