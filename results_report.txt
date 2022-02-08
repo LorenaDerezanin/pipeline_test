@@ -2,10 +2,20 @@
 
 In the final variant calling file (sample.vep.vcf), annotated with Ensembl Variant Effect Predictor (VEP), 
 in total 40 variants have been detected - 38 SNVs (95%) and 2 short DELs (5%). 
-The most frequent variant types are missense variants (62.5%), followed by synonymous variants (25%). 
-Among the SNVs, three are genotyped as heterozygous (GT: 0/1) and the rest (35 variants) are homozygous SNVs (GT: 1/1).
+The most frequent variant types in coding sequence are missense variants (64.6%), followed by synonymous variants (31.3%), 
+implying strong selective pressure.
+Among the SNVs, three are genotyped as heterozygous (GT: 0/1) and the rest (35 variants) are homozygous nonreference SNVs (GT: 1/1),
+which leads to heterozygosity ratio of 0.0857 (het. sites / nonref. hom. sites).
 The detected heterozygous SNVs are found to have low to moderate impact in transcripts of coding sequences, 
 and modifier impact in non-coding regions.
 
+Based on the low heterozygosity ratio, we can conclude that the sample of this particluar coronavirus strain (SARS-CoV Tor2), 
+having more nonref. homozygous sites, originates from population genetically farther from the reference genome. 
+These are possible causes:
+- strong positive selection leading to fixation of beneficial alleles through selective sweep, 
+sample has twice as many nonsynonymous variants compared to synonymous
+- high mutation rate and potential past recombination events might have led to this divergence and expansion of host ranges, 
+as these coronaviruses are associated with different hosts, reference genome is isolated from a bat, 
+and the sample in question, from a human host. 
 
- 
+
