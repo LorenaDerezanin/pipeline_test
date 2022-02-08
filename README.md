@@ -46,7 +46,7 @@ If conda fails to install `snakemake v.6.15`, install snakemake with mamba: `mam
 
 ## Pipeline content
 
-Bioinformatic tools used in the Snakemake workflow in the form of Snakemake Wrappers obtained from [The Snakemake Wrappers Repository](https://snakemake-wrappers.readthedocs.io/en/stable/):
+Bioinformatics tools used in the Snakemake workflow, in the form of snakemake wrappers obtained from [The Snakemake Wrappers Repository](https://snakemake-wrappers.readthedocs.io/en/stable/):
 
 * fastQC
 * multiQC
