@@ -24,6 +24,7 @@ Recommended installation to speed up env setup. Mamba is a more robust and faste
 ### Step 3: Recreate conda environment
 
 `cd pipeline_test/`<br/>
+
 `mamba env create -n snek -f envs/snek.yml`
 
 ### Step 4: Activate environment
@@ -33,7 +34,9 @@ Recommended installation to speed up env setup. Mamba is a more robust and faste
 
 ### Step 5: Run pipeline
 
-`snakemake --use-conda --cores 4 --verbose`
+`snakemake --use-conda --cores 4 --verbose`<br/>
+
+Number of suggested `--cores` when running pipeline locally, should be increased if running on a cluster. 
 
 
 ## Troubleshooting
