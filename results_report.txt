@@ -1,8 +1,11 @@
 ## Results Report ##
 
-In the final variant calling file (sample.vep.vcf), annotated with Ensembl Variant Effect Predictor (VEP), in total 40 variants have been detected - 38 SNVs (95%) and 2 short DELs (5%). 
+In the final variant calling file (sample.vep.vcf), annotated with Ensembl Variant Effect Predictor (VEP), 
+in total 40 variants have been detected - 38 SNVs (95%) and 2 short DELs (5%). 
 The most frequent variant types are missense variants (62.5%), followed by synonymous variants (25%). 
-Among the SNVs, three are genotyped as heterozygous (GT: 0/1) and the rest (35 variants) are homozygous SNVs (GT: 1/1). The detected heterozygous SNVs are found to have low to moderate impact in transcripts of coding sequences, and modifier impact in non-coding regions.
+Among the SNVs, three are genotyped as heterozygous (GT: 0/1) and the rest (35 variants) are homozygous SNVs (GT: 1/1).
+The detected heterozygous SNVs are found to have low to moderate impact in transcripts of coding sequences, 
+and modifier impact in non-coding regions.
 
 
  
