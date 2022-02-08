@@ -1,38 +1,53 @@
 
 # Variant calling pipeline 
 
+A Snakemake workflow for calling and annotation of short variants.
 
-### Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+## Usage
 
-### Recreate conda environment:
-`conda env create -f envs/snek.yml`
+`git clone git@github.com:LorenaDerezanin/pipeline_test.git` 
 
-### Activate environment:
+### Step 1: Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+Minimal conda installer for running pipeline in an isolated conda environment to avoid dependency hell and ensure reproducibility.
+
+### Step 2 (Recommended): Install mamba - faster package manager 
+
+`conda install mamba -n base -c conda-forge`
+
+Recommended installation to speed up env setup. Mamba is a more robust and faster package manager (parallel download of data), and handles releases and dependencies better than conda. If continuing with `conda`, `mamba` should be replaced with `conda` in Step 3.
+
+### Step 3: Recreate conda environment
+
+`mamba env create -n snek -f envs/snek.yml`
+
+### Step 4: Activate environment
+
 `conda activate snek`
 
 
-### Run pipeline as:
-`snakemake --use-conda --cores 4 --verbose -S Snakefile`
+### Step 5: Run pipeline
+
+`snakemake --use-conda --cores 4 --verbose`
 
 
-### Troubleshooting
+## Troubleshooting
 
-Install snakemake with mamba: 
-`mamba install snakemake`
-Robust package manager, handles snakemake releases and dependencies better than conda.
+If conda fails to install `snakemake v.6.15`, install snakemake with mamba: `mamba install snakemake`.
 
-* plot summary - Rmd > knit to html
-** het/hom SNPs/INDELs
-** genome synteny - gggenomes (R pkg)
-** chromomap - heatmap with variants
 
-Run unit tests
+## Pipeline content
 
-Test pipeline on mice reads mapped to MT - extract from dedup bam:
-* 1 mouse from control line (high cov set)
-* 1 mouse from "marathon" line (high cov set)
-* check cov with mosdepth
-* downsample if necessary (seqtk)
-* bam to fastq read pairs
-* map to ref. mouse mitogenome
-* run whole pipeline
+Bioinformatic tools used in the Snakemake workflow:
+
+* fastQC
+* multiQC
+* trim_galore
+* bwa 
+* samtools
+* picard
+* freebayes
+* bcftools
+* vep
+
+

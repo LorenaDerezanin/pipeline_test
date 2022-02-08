@@ -2,16 +2,10 @@
 
 # author: Lorena Derezanin
 
+# previously ran with:
 # snakemake v.6.15.2
 # conda v.4.11.0
 # mamba v.0.20 
-# snakemake --use-conda --cores 4 --verbose 
-
-
-# add unit tests 
-# add config with default params - 2 CPUs, required input params: -1 reads1.fq/fa -2 reads2.fa/fq -ref 
-# test pipeline on mice reads mapped to MT - extract from dedup bam
-
 
 
 ###########################################################################################################################################################
@@ -235,7 +229,6 @@ rule DP_filter:
 ## VARIANT ANNOTATION ##
 
 
-
 # get vep plugins
 rule vep_plugins:
     output:
@@ -263,3 +256,5 @@ rule vep_annotate_vars:
     threads: 4
     wrapper:
         "0.71.1/bio/vep/annotate"
+
+
