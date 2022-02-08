@@ -1,9 +1,10 @@
 
 # Variant calling pipeline 
 
-A Snakemake workflow for calling and annotation of short variants. Workflow takes paired-end Illumina short read data (fastq files) as input and outputs variant calls in a vcf file.\ 
-Input directory contains PE Illumina reads from a publicly available SARS-CoV-2 dataset [SRA accession SRR15660643] (https://www.ncbi.nlm.nih.gov/sra/?term=SRR15660643) downsampled to 16000 paired reads (sample.R1.paired.fq.gz and sample.R2.paired.fq.gz).\ 
-A fasta file with the Wuhan-Hu-1 reference genome [Genbank accession MN908947.3] (https://www.ncbi.nlm.nih.gov/nuccore/MN908947.3) is included in the\
+A Snakemake workflow for calling and annotation of short variants. Workflow takes paired-end Illumina short read data (fastq files) as input and outputs variant calls in a vcf file.<br/>
+\ 
+Input directory contains PE Illumina reads from a publicly available SARS-CoV-2 dataset [SRA accession SRR15660643](https://www.ncbi.nlm.nih.gov/sra/?term=SRR15660643) downsampled to 16000 paired reads (sample.R1.paired.fq.gz and sample.R2.paired.fq.gz).<br/> 
+A fasta file with the Wuhan-Hu-1 reference genome [Genbank accession MN908947.3](https://www.ncbi.nlm.nih.gov/nuccore/MN908947.3) is included in the<br/>
 reference directory (MN908947.3.fasta), along with the VEP cache for successful annotation of genomic features.
 
 ## Usage
