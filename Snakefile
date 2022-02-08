@@ -5,7 +5,7 @@
 # snakemake v.6.15.2
 # conda v.4.11.0
 # mamba v.0.20 
-# snakemake --use-conda --cores 4 --verbose -S Snakefile
+# snakemake --use-conda --cores 4 --verbose 
 
 
 # add unit tests 
@@ -16,7 +16,6 @@
 
 ###########################################################################################################################################################
 
-# configfile: "config.yaml"
 SAMPLES=["sample"]
 EXT=["1", "2"]
 REF="MN908947.3"

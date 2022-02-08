@@ -10,12 +10,16 @@
 ### Activate environment:
 `conda activate snek`
 
-### Install snakemake with mamba: 
-`mamba install snakemake`
-Robust package manager, handles snakemake releases and dependencies better than conda.
 
 ### Run pipeline as:
 `snakemake --use-conda --cores 4 --verbose -S Snakefile`
+
+
+### Troubleshooting
+
+Install snakemake with mamba: 
+`mamba install snakemake`
+Robust package manager, handles snakemake releases and dependencies better than conda.
 
 * plot summary - Rmd > knit to html
 ** het/hom SNPs/INDELs
