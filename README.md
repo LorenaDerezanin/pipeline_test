@@ -9,7 +9,7 @@ reference directory (MN908947.3.fasta), along with the VEP cache for successful 
 
 ## Usage
 
-`git clone git@github.com:LorenaDerezanin/pipeline_test.git` 
+"git clone https://github.com/LorenaDerezanin/pipeline_test"
 
 ### Step 1: Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 

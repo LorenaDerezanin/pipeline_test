@@ -110,6 +110,8 @@ rule bwa_index:
         "v1.0.0/bio/bwa/index"
 
 
+
+# index reference genome
 rule samtools_faidx:
     input:
         "reference/{ref}.fasta"
@@ -237,6 +239,7 @@ rule vep_plugins:
         release=101
     wrapper:
         "v1.1.0/bio/vep/plugins"
+
 
 
 # annotate variants
