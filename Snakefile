@@ -24,24 +24,23 @@ REF="MN908947.3"
 
 rule all:
     input:
-        # expand("results/stats/{sample}.R{ext}.html", sample=SAMPLES, ext=EXT),
-        # expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
-        # expand("results/stats/{sample}_multiqc.html", sample=SAMPLES),
+        expand("results/stats/{sample}.R{ext}.html", sample=SAMPLES, ext=EXT),
+        expand("results/stats/{sample}.R{ext}_fastqc.zip", sample=SAMPLES, ext=EXT),
+        expand("results/stats/{sample}_multiqc.html", sample=SAMPLES),
         # expand("results/trimmed_reads/{sample}.R1.paired_val_1.fq.gz", sample=SAMPLES),
-        # expand("results/trimmed_reads/{sample}.R1.paired.fq.gz_trimming_report.txt", sample=SAMPLES),
+        expand("results/trimmed_reads/{sample}.R1.paired.fq.gz_trimming_report.txt", sample=SAMPLES),
         # expand("results/trimmed_reads/{sample}.R2.paired_val_2.fq.gz", sample=SAMPLES),
-        # expand("results/trimmed_reads/{sample}.R2.paired.fq.gz_trimming_report.txt", sample=SAMPLES),
+        expand("results/trimmed_reads/{sample}.R2.paired.fq.gz_trimming_report.txt", sample=SAMPLES),
         # expand("reference/{ref}{ext}", ref=REF, ext=[".amb", ".ann", ".bwt", ".pac", ".sa"]),
-        # expand("reference/{ref}.fasta.fai", ref=REF),
+        expand("reference/{ref}.fasta.fai", ref=REF),
         # expand("results/mapped/{sample}_srt.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bam", sample=SAMPLES),
         # expand("results/dedup/{sample}_dedup.bai", sample=SAMPLES),
-        # expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
+        expand("results/dedup/{sample}.dedup.metrics.txt", sample=SAMPLES),
         # expand("results/var_calls/{sample}.vcf", sample=SAMPLES),
-        # expand("results/stats/{sample}.var.stats", sample=SAMPLES),
+        expand("results/stats/{sample}.var.stats", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_QUAL_fltr.vcf", sample=SAMPLES),
         # expand("results/var_filtered/{sample}_DP_fltr.vcf", sample=SAMPLES),
-        # "reference/vep/cache",
         "reference/vep/plugins",
         expand("results/var_vep_annotated/{sample}.vep.vcf", sample=SAMPLES),
         expand("results/var_vep_annotated/{sample}.vep.html", sample=SAMPLES)
@@ -236,20 +235,6 @@ rule DP_filter:
 
 ## VARIANT ANNOTATION ##
 
-
-# get annotation files
-# rule vep_cache:
-#     output:
-#         directory("reference/vep/cache")
-#     params:
-#         species="sars_cov_2",
-#         build="ASM985889v3",
-#         release="101"
-#     log:
-#         "logs/vep/cache.log"
-#     cache: True  
-#     wrapper:
-#         "0.70.0/bio/vep/cache"
 
 
 # get vep plugins
