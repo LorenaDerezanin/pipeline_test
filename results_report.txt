@@ -14,8 +14,10 @@ having more nonref. homozygous sites, originates from population genetically far
 These are possible causes:
 - strong positive selection leading to fixation of beneficial alleles through selective sweep, 
 sample has twice as many nonsynonymous variants compared to synonymous
+- low heterozygosity ratio, and high number of nonsynonymous variants hints that sample might have been synthetically engineered
 - high mutation rate and potential past recombination events might have led to this divergence and expansion of host ranges, 
 as these coronaviruses are associated with different hosts, reference genome is isolated from a bat, 
-and the sample in question, from a human host. 
+and the sample in question, from a human host
+
 
 
