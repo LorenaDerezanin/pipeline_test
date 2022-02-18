@@ -6,11 +6,8 @@ The most frequent variant types in coding sequence are missense variants (64.6%)
 implying strong selective pressure.
 Among the SNVs, three are genotyped as heterozygous (GT: 0/1) and the rest (35 variants) are homozygous nonreference SNVs (GT: 1/1),
 which leads to heterozygosity ratio of 0.0857 (het. sites / nonref. hom. sites).
-The detected heterozygous SNVs are found to have low to moderate impact in transcripts of coding sequences, 
-and modifier impact in non-coding regions.
 
-Based on the low heterozygosity ratio, we can conclude that the sample of this particluar coronavirus strain (SARS-CoV Tor2), 
-having more nonref. homozygous sites, originates from population genetically farther from the reference genome. 
+Based on the low heterozygosity ratio, we can conclude that the sample of this particular coronavirus strain
 These are possible causes:
 - strong positive selection leading to fixation of beneficial alleles through selective sweep, 
 sample has twice as many nonsynonymous variants compared to synonymous
