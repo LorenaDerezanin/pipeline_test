@@ -7,11 +7,18 @@ implying strong selective pressure.
 Among the SNVs, three are genotyped as heterozygous (GT: 0/1) and the rest (35 variants) are homozygous nonreference SNVs (GT: 1/1),
 which leads to heterozygosity ratio of 0.0857 (het. sites / nonref. hom. sites).
 
-Based on the low heterozygosity ratio, we can conclude that the sample of this particular coronavirus strain
-These are possible causes:
+We would expect all variants to be homozygous nonref. as coronavirus RNA genome is haploid.
+Based on the heterozygosity ratio and presence of het. variants, we can conclude that the sample 
+of this particular coronavirus strain might be a chimera of two different coronavirus strains infecting the patient 
+at the time when sampling was conducted. Such genomic mosaicism could have also occured if a single strain diverged into two
+distinct strains within the same host, leading to RNA of both strains being equally represented among amplicons.
+These het. variants might arisen due to host RNA editing mechanisms affecting viral RNA.
+Less likely, but possible, this mosaicims might be a result of contamination or sequencing error.
+
+Ns vs. Na:
 - strong positive selection leading to fixation of beneficial alleles through selective sweep, 
 sample has twice as many nonsynonymous variants compared to synonymous
-- low heterozygosity ratio, and high number of nonsynonymous variants hints that sample might have been synthetically engineered
+- high number of nonsynonymous variants hints that sample might have been synthetically engineered
 - high mutation rate and potential past recombination events might have led to this divergence and expansion of host ranges, 
 as these coronaviruses are associated with different hosts, reference genome is isolated from a bat, 
 and the sample in question, from a human host
