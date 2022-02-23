@@ -2,7 +2,7 @@
 
 # author: Lorena Derezanin
 
-# previously ran with:
+# ran with:
 # snakemake v.6.15.2
 # conda v.4.11.0
 # mamba v.0.20 
@@ -87,7 +87,7 @@ rule trim_PE_reads:
         "logs/trim_galore/{sample}.log"
     wrapper:
         "v1.0.0/bio/trim_galore/pe"
-
+# default params:
 
 
 
@@ -140,7 +140,7 @@ rule map_reads:
     threads: 2
     wrapper:
         "v1.1.0/bio/bwa/mem"
-
+# default params: 
 
 
 # remove duplicates
@@ -159,7 +159,7 @@ rule dedup:
         mem_mb=1024
     wrapper:
         "v1.1.0/bio/picard/markduplicates"
-
+# default params:
 
 
 ###########################################################################################################################################################
@@ -180,7 +180,7 @@ rule var_call:
     threads: 2
     wrapper:
         "v1.1.0/bio/freebayes"
-
+# default params:
 
 
 # check min, max DP before filtering
@@ -259,5 +259,5 @@ rule vep_annotate_vars:
     threads: 4
     wrapper:
         "0.71.1/bio/vep/annotate"
-
+# default params:
 
