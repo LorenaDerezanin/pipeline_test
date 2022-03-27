@@ -19,7 +19,7 @@ Minimal conda installer for running pipeline in an isolated conda environment to
 
 `conda install mamba -n base -c conda-forge`
 
-Recommended installation to speed up env setup. Mamba is a more robust and faster package manager (parallel download of data), and handles releases and dependencies better than conda. If continuing with `conda`, `mamba` should be replaced with `conda` in Step 3.
+Recommended installation to speed up env setup. Mamba is a more robust and faster package manager (parallel download of data), and handles releases and dependencies better than conda. If continuing with `conda`, `mamba` command should be replaced with `conda` in Step 3.
 
 ### Step 3: Recreate conda environment
 
@@ -60,6 +60,6 @@ Bioinformatics tools used in the Snakemake workflow, in the form of snakemake wr
 
 
 - to do:
-	* Docker container + conda
+	* Docker container + conda/mamba
 	* AWS/Google cloud deployment
 	* unit tests
