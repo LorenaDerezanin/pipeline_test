@@ -59,3 +59,7 @@ Bioinformatics tools used in the Snakemake workflow, in the form of snakemake wr
 * vep
 
 
+- to do:
+	* Docker container + conda
+	* AWS/Google cloud deployment
+	* unit tests
